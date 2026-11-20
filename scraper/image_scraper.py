@@ -4,9 +4,9 @@ import threading
 from urllib.parse import urlparse
 
 from scraper.http_client import fetch_tree, is_allowed_by_robots
-from scraper.url_resolve import resolve_img_url
+from scraper.url_resolve import IMG_STYLE, is_image_url, resolve_img_url
 
-IMG_STYLE = [ 'jpg' , 'png' , 'gif' , 'jpeg']
+#IMG_STYLE = [ 'jpg' , 'png' , 'gif' , 'jpeg']   # scraper/url_resolve.py へ移動(webp追加)
 
 D_HIERARCHY =["//","///","////"]
 
@@ -142,11 +142,9 @@ def img_web_AHREFsrc(url):
 
 
         for i in a_tags:
-            for k in IMG_STYLE:
-                nam = i.rfind(k)
-
-                if nam == len(i)-3 or nam == len(i)-4:
-                    img_tags.append(i)
+            # クエリ付き(a.jpg?w=800)・大文字(a.JPG)も画像として判定する
+            if is_image_url(i):
+                img_tags.append(i)
 
         
            
