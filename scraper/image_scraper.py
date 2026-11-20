@@ -4,6 +4,8 @@ from datetime import datetime
 import threading
 from urllib.parse import urlparse
 
+from scraper.url_resolve import resolve_img_url
+
 IMG_STYLE = [ 'jpg' , 'png' , 'gif' , 'jpeg']
 
 D_HIERARCHY =["//","///","////"]
@@ -24,17 +26,7 @@ def img_web_surfaceList(url):
         try :
             for i in  tree.xpath(f'{k}img/@src'):
                 
-                if i.find('//') == 0:
-                    i = f'https:{i}'
-                    #print(i)
-                elif i.find('/')==0:
-                    i = f'{url}{i}'
-                elif i.find('http')==0:
-                    pass
-                else:
-                    head_text =  url.rfind("/")
-                    url_ed = url[:head_text]
-                    i = f"{url_ed}/{i}"
+                i = resolve_img_url(url, i)
                 img_tags.append(i)
             time.sleep(1)
         except Exception as e :
@@ -65,17 +57,7 @@ def img_webS_srcList(urls):
         try :
             for i in  tree.xpath('//img/@src'):
                 
-                if i.find('//') == 0:
-                    i = f'https:{i}'
-                    #print(i)
-                elif i.find('/')==0:
-                    i = f'{url}{i}'
-                elif i.find('http')==0:
-                    pass
-                else:
-                    head_text =  url.rfind("/")
-                    url_ed = url[:head_text]
-                    i = f"{url_ed}/{i}"
+                i = resolve_img_url(url, i)
                 img_tags.append(i)
             time.sleep(1)
         except Exception as e :
@@ -83,16 +65,7 @@ def img_webS_srcList(urls):
         #continue
         try :
             for i in  tree.xpath('a/img/@src'):
-                if i.find('//') == 0:
-                    i = f'https:{i}'
-                elif i.find('/')==0:
-                    i = f'{url}{i}'
-                elif i.find('http')==0:
-                    pass
-                else:
-                    head_text =  url.rfind("/")
-                    url_ed = url[:head_text]
-                    i = f"{url_ed}/{i}"
+                i = resolve_img_url(url, i)
                     
                 img_tags.append(i)
             time.sleep(1)
@@ -106,16 +79,7 @@ def img_webS_srcList(urls):
                     
                     
                     for i in  j.xpath('/img/@src'):
-                        if i.find('//') == 0:
-                            i = f'https:{i}'
-                        elif i.find('/')==0:
-                            i = f'{url}{i}'
-                        elif i.find('http')==0:
-                            pass
-                        else:
-                            head_text =  url.rfind("/")
-                            url_ed = url[:head_text]
-                            i = f"{url_ed}/{i}"
+                        i = resolve_img_url(url, i)
                         img_tags.append(i)
                         
                     time.sleep(1)
@@ -149,16 +113,7 @@ def deepHTML_img(url):
                 treeJ = html.fromstring(html_docJ)
                 print(treeJ)
                 for i in  treeJ.xpath('/img/@src'):
-                    if i.find('//') == 0:
-                        i = f'https:{i}'
-                    elif i.find('/')==0:
-                        i = f'{url}{i}'
-                    elif i.find('http')==0:
-                        pass
-                    else:
-                        head_text =  url.rfind("/")
-                        url_ed = url[:head_text]
-                        i = f"{url_ed}/{i}"
+                    i = resolve_img_url(url, i)
                     img_tags.append(i)
                     
             time.sleep(1)
@@ -191,23 +146,12 @@ def img_web_AHREFsrc(url):
     for k in D_hierarchy:
         try:    
             for i in  tree.xpath(f'{k}a/@href'):
-                    if i.find('//') == 0:
-                        i = f'https:{i}'
-                    elif i.find('/')==0:
-                        #print(i)
-                        # j = f'https://{domain}{i}'
-                        
-                        # a_tags.append(j)
-                        #print(j)
-                        i = f'{url}{i}'
-                        #print(j)
-                        
-                    elif i.find('http')==0:
-                        pass
-                    else:
-                        head_text =  url.rfind("/")
-                        url_ed = url[:head_text]
-                        i = f"{url_ed}/{i}"
+                    #print(i)
+                    # j = f'https://{domain}{i}'
+                    
+                    # a_tags.append(j)
+                    #print(j)
+                    i = resolve_img_url(url, i)
                     a_tags.append(i)
         except Exception as e :print(e)    
         #print(a_tags)
@@ -265,16 +209,7 @@ def web_P_imgsrc(url):
     for j in D_HIERARCHY:  
         try :
             for i in  tree.xpath(f'{j}p/img/@src'):
-                if i.find('//') == 0:
-                    i = f'https:{i}'
-                elif i.find('/')==0:
-                    i = f'{url}{i}'
-                elif i.find('http')==0:
-                    pass
-                else:
-                    head_text =  url.rfind("/")
-                    url_ed = url[:head_text]
-                    i = f"{url_ed}/{i}"
+                i = resolve_img_url(url, i)
                 img_tags.append(i)
             time.sleep(1)
         except Exception as e :print(e) 
