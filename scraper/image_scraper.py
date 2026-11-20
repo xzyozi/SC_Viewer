@@ -1,9 +1,9 @@
-import requests,time,re
-from lxml import html
+import time,re
 from datetime import datetime
 import threading
 from urllib.parse import urlparse
 
+from scraper.http_client import fetch_tree, is_allowed_by_robots
 from scraper.url_resolve import resolve_img_url
 
 IMG_STYLE = [ 'jpg' , 'png' , 'gif' , 'jpeg']
@@ -14,10 +14,8 @@ D_HIERARCHY =["//","///","////"]
 def img_web_surfaceList(url):
     img_tags = []
     #D_hierarchy =["//","///","////","/////","//////","///////","////////"]
-    response = requests.get(url)
-    html_doc = response.content
+    tree = fetch_tree(url)
 
-    tree = html.fromstring(html_doc)
 
     domain = urlparse(url).hostname
 
@@ -47,11 +45,9 @@ def img_webS_srcList(urls):
     img_tags = []
     D_hierarchy =["//","///","////","/////","//////"]
     for n,url in enumerate(urls):
-        response = requests.get(url)
-        html_doc = response.content
+        tree = fetch_tree(url)
 
         #print(n)
-        tree = html.fromstring(html_doc)
         #for k in D_hierarchy:
         # imgタグのsrc属性を取得
         try :
@@ -97,20 +93,20 @@ def deepHTML_img(url):
 
     img_tags = []
     #D_hierarchy =["//","///","////","/////","//////","///////","////////"]
-    response = requests.get(url)
-    html_doc = response.content
+    tree = fetch_tree(url)
 
-    tree = html.fromstring(html_doc)
 
     domain = urlparse(url).hostname
     try :
         for k in D_HIERARCHY:
             a_tags = tree.xpath(f'{k}a/@href')
             for j in a_tags:
-                responseJ = requests.get(j)
-                html_docJ = responseJ.content
-
-                treeJ = html.fromstring(html_docJ)
+                # 連続取得: robots.txt を確認し、リンク先ごとに待機する
+                j = resolve_img_url(url, j)
+                if not is_allowed_by_robots(j):
+                    continue
+                time.sleep(1)
+                treeJ = fetch_tree(j)
                 print(treeJ)
                 for i in  treeJ.xpath('/img/@src'):
                     i = resolve_img_url(url, i)
@@ -136,10 +132,8 @@ def img_web_AHREFsrc(url):
     
     #D_hierarchy =["//"]
 
-    response = requests.get(url)
-    html_doc = response.content
+    tree = fetch_tree(url)
 
-    tree = html.fromstring(html_doc)
     
     domain = urlparse(url).hostname
     #print(domain)
@@ -201,10 +195,8 @@ def img_web_AHREFsrc(url):
 def web_P_imgsrc(url):
     img_tags = []
 
-    response = requests.get(url)
-    html_doc = response.content
+    tree = fetch_tree(url)
 
-    tree = html.fromstring(html_doc)        
 
     for j in D_HIERARCHY:  
         try :
@@ -222,10 +214,8 @@ def web_P_imgsrc(url):
 
 def detaSlider(url):
     img_tags = []
-    response = requests.get(url)
-    html_doc = response.content
+    tree = fetch_tree(url)
 
-    tree = html.fromstring(html_doc)        
     domain = urlparse(url).hostname
     for j in D_HIERARCHY:
         try :
@@ -243,10 +233,8 @@ def detaSlider(url):
 def img_web_Aimgsrc(url):
     img_tags = []
     
-    response = requests.get(url)
-    html_doc = response.content
+    tree = fetch_tree(url)
 
-    tree = html.fromstring(html_doc)        
     domain = urlparse(url).hostname
     for j in D_HIERARCHY:  
         try :
