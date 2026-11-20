@@ -68,19 +68,9 @@ def img_webS_srcList(urls):
         except Exception as e :print(e) 
         
         
-        try :
-            for k in D_hierarchy:
-                a_tags = tree.xpath('//a/@href')
-                for j in a_tags:
-                    
-                    
-                    for i in  j.xpath('/img/@src'):
-                        i = resolve_img_url(url, i)
-                        img_tags.append(i)
-                        
-                    time.sleep(1)
-        
-        except Exception as e :print(e) 
+        # [削除] リンク先の画像取得ブロック。
+        # '//a/@href' は文字列のリストなので j.xpath(...) は常に AttributeError となり、
+        # 例外が握りつぶされて機能していなかった。リンク先の取得は deepHTML_img が担当する。
 
     img_tags = list(dict.fromkeys(img_tags))
 
