@@ -227,21 +227,9 @@ def img_web_Aimgsrc(url):
     for j in D_HIERARCHY:  
         try :
             for i in  tree.xpath(f'{j}a/img/@src'):
-                if i.find('//') == 0:
-                    i = f'https:{i}'
-                elif i.find('/')==0:
-                    j = f'https://{domain}{i}'
-                        
-                    img_tags.append(j)
-                    
-                    i = f'{url}{i}'
-                
-                elif i.find('http')==0:
-                    pass
-                else:
-                    head_text =  url.rfind("/")
-                    url_ed = url[:head_text]
-                    i = f"{url_ed}/{i}"
+                # 旧: '/' 始まりの分岐で外側ループ変数 j を上書きし、img_tags に2件追加していた。
+                # 変数 j は上書きせず、正しい絶対URLを1件だけ追加する。
+                i = resolve_img_url(url, i)
                 img_tags.append(i)
             time.sleep(1)
         except Exception as e :print(e) 
@@ -265,7 +253,7 @@ def SurDeep_imgthread(url):
     url_thread = threading.Thread(target=lambda: img_surfacelist.extend(img_web_surfaceList(url)))
     image_thread = threading.Thread(target=lambda: a_href_imglist.extend(img_web_AHREFsrc(url)))
     #deep_thread = threading.Thread(target=lambda: htmldeep.extend(deepHTML_img(url)))
-    aIMG_thread = threading.Thread(target=lambda:a_href_imglist.extend(img_web_Aimgsrc(url)))
+    aIMG_thread = threading.Thread(target=lambda:a_img_srclist.extend(img_web_Aimgsrc(url)))  # 旧: a_href_imglist に混入し a_img_srclist は常に空だった
     p_img_thread = threading.Thread(target=lambda:P_img_list.extend(web_P_imgsrc(url)))
     d_Slider_thread = threading.Thread(target=lambda: slide_list.extend(detaSlider(url)))
 
